@@ -59,6 +59,7 @@ void merge(Node *&root, Node *left, Node *right) {
 		merge(right->left, left, right->left);
 		root = right;
 	}
+	root->size = 1 + size(root->left) + size(root->right);
 }
 
 void print(Node *cur) {
