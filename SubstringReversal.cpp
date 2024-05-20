@@ -25,21 +25,20 @@ const int MAX = 2e9;
 int getpri() {return rand(0, MAX);}
 struct Node{
 	char val;
-	int cnt, weight;
+	int size, weight;
 	bool inv;
 	Node *left, *right;
 	Node() {}
-	Node(char val, int cnt, int weight, bool inv, Node *left, Node *right) : val(val), cnt(cnt), weight(weight), inv(inv), left(left), right(right) {};
+	Node(char val) : val(val), size(1), weight(getpri()), inv(0), left(0), right(0) {};
 } *root;
 
-int cnt(Node *cur) {return cur ? cur->cnt : 0;}
-
-void updcnt(Node *cur) {
-	if (cur) cur->cnt = cnt(cur->left) + cnt(cur->right) + 1;
-}
+int size(Node *cur) {return cur ? cur->size : 0;}
 
 void pushdown(Node *cur) 
 {
+	/*
+	LazyUpdate
+	*/
 	if (!cur) return;
 	if (!cur->inv) return;
 	swap(cur->left, cur->right);
@@ -53,10 +52,10 @@ void split(Node *cur, Node *&l, Node *&r, int key, int add)
 	pushdown(cur);
 	if (!cur) 
 	{
-		l = r = 0;
+		l = r = NULL;
 		return;
 	}
-	int curkey = cnt(cur->left) + add;
+	int curkey = size(cur->left) + add;
 	if (curkey > key) 
 	{
 		split(cur->left, l, cur->left, key, add);
@@ -64,10 +63,10 @@ void split(Node *cur, Node *&l, Node *&r, int key, int add)
 	}
 	else 
 	{
-		split(cur->right, cur->right, r, key, add + cnt(cur->left) + 1);
+		split(cur->right, cur->right, r, key, add + size(cur->left) + 1);
 		l = cur;
 	}
-	updcnt(cur);
+	cur->size = size(cur->left) + size(cur->right) + 1;
 }
 
 void merge(Node *&cur, Node *l, Node *r) 
@@ -89,7 +88,7 @@ void merge(Node *&cur, Node *l, Node *r)
 		merge(r->left, l, r->left);
 		cur = r;
 	}
-	updcnt(cur);
+	cur->size = size(cur->left) + size(cur->right) + 1;
 }
 
 void print(Node *cur) {
@@ -107,7 +106,7 @@ void input()
 	for (int i = 1; i <= n; i++) 
 	{
 		cin >> c;
-		merge(root, root, new Node(c, 1, getpri(), 0, 0, 0));
+		merge(root, root, new Node(c));
 	}
 }	
 
