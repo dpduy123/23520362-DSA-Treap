@@ -26,6 +26,7 @@ int getpri() {return rand(0, MAX);}
 struct Node {
 	int val, weight, size;
 	Node *left, *right;
+	Node() {}
 	Node(int val) : val(val), size(1), weight(getpri()), left(NULL), right(NULL){};
 } *root;
 
