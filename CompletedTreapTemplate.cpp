@@ -24,19 +24,11 @@ const int MAX = 2e9;
 
 int getpri() {return rand(0, MAX);}
 struct Node {
-	// the value and weightority of the node respectively
 	int val, weight, size;
-	// pointer to left and right child (NULL means no child)
 	Node *left, *right;
-	Node(int val) : val(val), weight(getpri()), left(NULL), right(NULL){};
+	Node(int val) : val(val), size(1), weight(getpri()), left(NULL), right(NULL){};
 } *root;
 
-/**
- * pass in root as pointer, left and right as references
- * to a node pointer so we can modify them
- * (alternatively, we can return left and right pointers
- * as an std::pair)
- */
 int size(Node *cur) {return cur ? cur->size : 0;}
 void split(Node *treap, Node *&left, Node *&right, int key, int add = 0) {
 	if (!treap) {
@@ -55,11 +47,6 @@ void split(Node *treap, Node *&left, Node *&right, int key, int add = 0) {
 	treap->size = 1 + size(treap->left) + size(treap->right);
 }
 
-/**
- * merge left and right pointers into root which
- * is a reference to a pointer to enable
- * modification within the function
- */
 void merge(Node *&root, Node *left, Node *right) {
 	if (!left || !right) {
 		root = left ? left : right;
