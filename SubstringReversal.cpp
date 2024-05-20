@@ -47,48 +47,39 @@ void pushdown(Node *cur)
 	cur->inv = 0;
 }
 
-void split(Node *cur, Node *&l, Node *&r, int key, int add)
-{
-	pushdown(cur);
-	if (!cur) 
-	{
-		l = r = NULL;
+void split(Node *treap, Node *&left, Node *&right, int key, int add = 0) {
+	pushdown(treap);
+	if (!treap) {
+		left = right = NULL;
 		return;
 	}
-	int curkey = size(cur->left) + add;
-	if (curkey > key) 
-	{
-		split(cur->left, l, cur->left, key, add);
-		r = cur;
+
+	int cur_size = add + size(treap->left);  // implicit key
+	if (cur_size <= key) {
+		split(treap->right, treap->right, right, key, add + 1 + size(treap->left));
+		left = treap;
+	} else {
+		split(treap->left, left, treap->left, key, add); 
+		right = treap;
 	}
-	else 
-	{
-		split(cur->right, cur->right, r, key, add + size(cur->left) + 1);
-		l = cur;
-	}
-	cur->size = size(cur->left) + size(cur->right) + 1;
+	treap->size = 1 + size(treap->left) + size(treap->right);
 }
 
-void merge(Node *&cur, Node *l, Node *r) 
-{
-	pushdown(l);
-	pushdown(r);
-	if (!l || !r) 
-	{
-		cur = l? l : r;
+void merge(Node *&root, Node *left, Node *right) {
+	pushdown(left);
+	pushdown(right);
+	if (!left || !right) {
+		root = left ? left : right;
 		return;
 	}
-	if (l->weight > r->weight) 
-	{
-		merge(l->right, l->right, r);
-		cur = l;
+	if (left->weight > right->weight) {
+		merge(left->right, left->right, right);
+		root = left;
+	} else {
+		merge(right->left, left, right->left);
+		root = right;
 	}
-	else 
-	{
-		merge(r->left, l, r->left);
-		cur = r;
-	}
-	cur->size = size(cur->left) + size(cur->right) + 1;
+	root->size = 1 + size(root->left) + size(root->right);
 }
 
 void print(Node *cur) {
