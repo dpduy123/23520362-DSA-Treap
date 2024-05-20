@@ -1,19 +1,17 @@
-/**
- * pass in root as pointer, left and right as references
- * to a node pointer so we can modify them
- * (alternatively, we can return left and right pointers
- * as an std::pair)
- */
-void split(Node *root, int x, Node *&left, Node *&right) {
-	if (!root) {
+int size(Node *cur) {return cur ? cur->size : 0;}
+void split(Node *treap, Node *&left, Node *&right, int key, int add = 0) {
+	if (!treap) {
 		left = right = NULL;
 		return;
 	}
-	if (root->val <= x) {
-		split(root->right, x, root->right, right);
-		left = root;
+
+	int cur_size = add + size(treap->left);  // implicit key
+	if (cur_size < key) {
+		split(treap->right, treap->right, right, key, add + 1 + size(treap->left));
+		left = treap;
 	} else {
-		split(root->left, x, left, root->left);
-		right = root;
+		split(treap->left, left, treap->left, key, add); 
+		right = treap;
 	}
+	treap->size = 1 + size(treap->left) + size(treap->right);
 }
