@@ -37,7 +37,7 @@ void split(Node *treap, Node *&left, Node *&right, int key, int add = 0) {
 	}
 
 	int cur_size = add + size(treap->left);  // implicit key
-	if (cur_size < key) {
+	if (cur_size <= key) {
 		split(treap->right, treap->right, right, key, add + 1 + size(treap->left));
 		left = treap;
 	} else {
